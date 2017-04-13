@@ -54,6 +54,8 @@
      success:^(NSURLSessionTask *task, NSDictionary *responseObject) {
          NSLog(@"JSON: %@", responseObject);
          
+//         self.data = [NSMutableArray array];
+         
          NSArray *dictArray = (NSArray*) responseObject;
          
          NSMutableArray *objectsArray = [NSMutableArray array];
@@ -65,13 +67,11 @@
              [objectsArray addObject:resObj]; 
          }
          
-         
          [self.data addObjectsFromArray:objectsArray];
          if (success) {
              success(objectsArray);
          }
          
-  
      } failure:^(NSURLSessionTask *operation, NSError *error) {
          NSLog(@"Error: %@", error);
          
@@ -83,6 +83,15 @@
    
 }
 
+
+//lazy initialization
+- (NSMutableArray *)data {
+    
+    if (!_data) {
+        _data = [NSMutableArray new];
+    }
+    return _data;
+}
 
 
 

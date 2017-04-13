@@ -10,10 +10,11 @@
 #import "JMServerManager.h"
 #import "JMResponseObject.h"
 
-@interface JMScroolViewImageViewController ()
+@interface JMScroolViewImageViewController () <UICollectionViewDataSource, UICollectionViewDelegate >
 
 @property (strong, nonatomic) NSMutableArray *myDataArray;
 @property (strong, nonatomic) UIImageView* myImage;
+@property (strong , nonatomic) UICollectionView *collectionView;
 
 @end
 
@@ -22,51 +23,84 @@
 - (void) loadView {
     [super loadView];
     
-    /*
-    
-    NSURLRequest *request = [NSURLRequest requestWithURL:myDataArray[0].imageUrl];
-    
-    UIImageView* imageView = [[UIImageView alloc] init];
-    
-    [imageView setImageWithURLRequest:request
-                     placeholderImage:nil
-                              success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull image) {
-                                  
-                                  weakCell.imageView.image = image;
-                                  
-                              }
-                              failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, NSError * _Nonnull error) {
-                                  
-                              }];
-    */
+
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self setupScroolViewWithImgeView];
+   // [self setupScroolViewWithImgeView];
+    
+    [self initCollectionView];
+    
+}
+// image title
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    
+    NSLog(@"Did scroll");
+   
+    NSInteger currentIndex = (NSInteger)ceil(scrollView.contentOffset.x / scrollView.frame.size.width);
+    
+    JMResponseObject* currentData = [JMServerManager sharedManager].data[currentIndex];
+    
+    self.title = currentData.titleObj;
+    
+    scrollView.pagingEnabled = YES;
+    
 }
 
 
+#pragma mark - initCollectionView
+
+- (void) initCollectionView {
+ 
+    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
+    
+    layout.itemSize = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height);
+    
+    self.collectionView = [[UICollectionView alloc]
+                           initWithFrame:self.view.frame
+                           collectionViewLayout:layout];
+
+     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    
+    self.collectionView.dataSource = self;
+    [self.collectionView setDelegate:self];
+    
+    [self.collectionView registerClass:[UICollectionViewCell class]
+            forCellWithReuseIdentifier:@"cellIdentifier"];
+    
+    [self.collectionView setBackgroundColor:[UIColor clearColor]];
+    
+    [self.view addSubview:self.collectionView];
+}
+
+#pragma mark - UICollectionViewDataSource
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    NSLog(@"%lu", (unsigned long)[JMServerManager sharedManager].data.count);
+    return [JMServerManager sharedManager].data.count;
+}
+
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UICollectionViewCell *cell =
+    [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
+    JMResponseObject *currentObject = [JMServerManager sharedManager].data[indexPath.row];
+    NSData *data = [[NSData alloc] initWithContentsOfURL:currentObject.imageUrl];
+    UIImage *loadedImage = [[UIImage alloc] initWithData:data];
+    cell.backgroundView = [[UIImageView alloc] initWithImage:loadedImage];
+        
+    return cell;
+}
+
+
+/*
 #pragma mark - Scroll Methods
 
 - (void) setupScroolViewWithImgeView {
     
-    /*
-     [self.myDataArray addObjectsFromArray:[[JMServerManager sharedManager] data]];
-     
-     self.view.backgroundColor = [UIColor clearColor];
-     CGRect frame = UIScreen.mainScreen.bounds;
-     self.myImage = [[UIImageView alloc] initWithFrame:frame];
-     
-     NSURL* url = ((JMResponseObject*)self.myDataArray[0]).imageUrl;
-     NSData *data = [[NSData alloc] initWithContentsOfURL:url];
-     UIImage* image = [[UIImage alloc] initWithData:data];
-     self.myImage = [[UIImageView alloc] initWithImage:image];
-     
-     
-     [self.view addSubview:self.myImage];
-     */
+   
     
     NSInteger pageCount = 4;
     
@@ -107,9 +141,7 @@
     [self.view addSubview:scroll];
     
 }
-
-
-
+*/
 -(void) updateTitle: (NSString*) title {
     
     self.title = title;
@@ -123,14 +155,10 @@
     
 }
 
-
-
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
 
 
 

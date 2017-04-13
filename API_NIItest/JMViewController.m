@@ -160,7 +160,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    
     JMScroolViewImageViewController *newVC = [[JMScroolViewImageViewController alloc]init];
     
     NSString* text = [[[tableView cellForRowAtIndexPath:indexPath] textLabel] text];
@@ -171,12 +170,9 @@
     
     [newVC setTitle:text];
     
-    
     [self.navigationController pushViewController:newVC animated:YES];
     
 }
-
-
 
 
 - (void)didReceiveMemoryWarning {

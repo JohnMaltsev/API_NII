@@ -23,8 +23,7 @@
         if (urlString) {
             self.imageUrl = [NSURL URLWithString:urlString];
         }
-        
-        
+    
     }
     return self;
 }

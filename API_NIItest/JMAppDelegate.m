@@ -24,11 +24,6 @@
      [self.window setRootViewController:nc];
      [self.window makeKeyAndVisible];
     
- 
-//    JMViewController *vc = [JMViewController new];
-//    self.window.rootViewController = vc;
-    
-    
     return YES;
 }
 

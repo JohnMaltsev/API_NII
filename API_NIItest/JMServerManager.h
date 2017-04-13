@@ -10,12 +10,11 @@
 
 @interface JMServerManager : NSObject
 
+@property (strong, nonatomic)  NSMutableArray *data;
+
 + (JMServerManager*) sharedManager;
 
-
-@property (strong, nonatomic)   NSMutableArray *data;
-
--(void) getDataFromServerOnSuccess:(void(^)(NSArray *data)) success
+- (void)getDataFromServerOnSuccess:(void(^)(NSArray *data)) success
                          onFailure:(void(^)(NSError *error)) failure;
 
 @end
